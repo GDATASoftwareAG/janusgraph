@@ -14,10 +14,15 @@
 
 package org.janusgraph.graphdb.types.vertices;
 
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.janusgraph.core.EdgeLabel;
+import org.janusgraph.core.PropertyKey;
 import org.janusgraph.graphdb.transaction.StandardJanusGraphTx;
 import org.janusgraph.graphdb.types.TypeDefinitionCategory;
-import org.apache.tinkerpop.gremlin.structure.Direction;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 public class EdgeLabelVertex extends RelationTypeVertex implements EdgeLabel {
 
@@ -34,6 +39,13 @@ public class EdgeLabelVertex extends RelationTypeVertex implements EdgeLabel {
     public boolean isUnidirected() {
         return isUnidirected(Direction.OUT);
 
+    }
+
+    @Override
+    public Collection<PropertyKey> mappedProperties() {
+        return StreamSupport.stream( getRelated(TypeDefinitionCategory.PROPERTY_KEY_EDGE, Direction.OUT).spliterator(), false)
+            .map(entry -> (PropertyKey) entry.getSchemaType())
+            .collect(Collectors.toList());
     }
 
     @Override

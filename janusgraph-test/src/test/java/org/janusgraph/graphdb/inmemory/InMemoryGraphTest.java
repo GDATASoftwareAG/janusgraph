@@ -102,4 +102,12 @@ public class InMemoryGraphTest extends JanusGraphTest {
     @Override
     public void testClearStorage() {}
 
+    @Override
+    public void testAutoSchemaMakerForEdgePropertyConstraints() {}
+
+    @Override
+    public void testAutoSchemaMakerForVertexPropertyConstraints() {}
+
+    @Override
+    public void testAutoSchemaMakerForConnectionConstraints() {}
 }

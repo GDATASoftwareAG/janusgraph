@@ -59,11 +59,7 @@ import org.janusgraph.graphdb.database.IndexSerializer;
 import org.janusgraph.graphdb.database.StandardJanusGraph;
 import org.janusgraph.graphdb.database.cache.SchemaCache;
 import org.janusgraph.graphdb.database.serialize.DataOutput;
-import org.janusgraph.graphdb.internal.ElementCategory;
-import org.janusgraph.graphdb.internal.InternalRelationType;
-import org.janusgraph.graphdb.internal.Order;
-import org.janusgraph.graphdb.internal.JanusGraphSchemaCategory;
-import org.janusgraph.graphdb.internal.Token;
+import org.janusgraph.graphdb.internal.*;
 import org.janusgraph.graphdb.olap.VertexJobConverter;
 import org.janusgraph.graphdb.olap.job.IndexRemoveJob;
 import org.janusgraph.graphdb.olap.job.IndexRepairJob;
@@ -101,13 +97,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nullable;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -269,11 +259,7 @@ public class ManagementSystem implements JanusGraphManagement {
     }
 
     private JanusGraphEdge addSchemaEdge(JanusGraphVertex out, JanusGraphVertex in, TypeDefinitionCategory def, Object modifier) {
-        assert def.isEdge();
-        JanusGraphEdge edge = transaction.addEdge(out, in, BaseLabel.SchemaDefinitionEdge);
-        TypeDefinitionDescription desc = new TypeDefinitionDescription(def, modifier);
-        edge.property(BaseKey.SchemaDefinitionDesc.name(), desc);
-        return edge;
+        return transaction.addSchemaEdge(out, in, def, modifier);
     }
 
     // ###### INDEXING SYSTEM #####################
@@ -429,7 +415,7 @@ public class ManagementSystem implements JanusGraphManagement {
             })
             .filter(indexType -> indexType.getElement().subsumedBy(elementType))
             .map(JanusGraphIndexWrapper::new)
-        .collect(Collectors.toList());
+            .collect(Collectors.toList());
     }
 
     /**
@@ -1003,7 +989,8 @@ public class ManagementSystem implements JanusGraphManagement {
     public void changeName(JanusGraphSchemaElement element, String newName) {
         Preconditions.checkArgument(StringUtils.isNotBlank(newName), "Invalid name: %s", newName);
         JanusGraphSchemaVertex schemaVertex = getSchemaVertex(element);
-        if (schemaVertex.name().equals(newName)) return;
+        String oldName = schemaVertex.name();
+        if (oldName.equals(newName)) return;
 
         JanusGraphSchemaCategory schemaCategory = schemaVertex.valueOrNull(BaseKey.SchemaCategory);
         Preconditions.checkArgument(schemaCategory.hasName(), "Invalid schema element: %s", element);
@@ -1024,9 +1011,32 @@ public class ManagementSystem implements JanusGraphManagement {
         }
 
         transaction.addProperty(schemaVertex, BaseKey.SchemaName, schemaCategory.getSchemaName(newName));
+
+        UpdateConnectionEdgeConstraints(schemaVertex, oldName, newName);
+
         updateSchemaVertex(schemaVertex);
         schemaVertex.resetCache();
         updatedTypes.add(schemaVertex);
+    }
+
+    private void UpdateConnectionEdgeConstraints(JanusGraphSchemaVertex edgeLabel, String oldName, String newName) {
+        if (!(edgeLabel instanceof EdgeLabel)) return;
+        StreamSupport.stream(edgeLabel.getRelated(TypeDefinitionCategory.UPDATE_CONNECTION_EDGE, Direction.OUT).spliterator(), false)
+            .map(SchemaSource.Entry::getSchemaType)
+            .filter(s -> s instanceof JanusGraphSchemaVertex)
+            .map(s -> {
+                schemaCache.expireSchemaElement(s.longId());
+                return (JanusGraphSchemaVertex) s;
+            })
+            .flatMap(s -> StreamSupport.stream(s.query().type(BaseLabel.SchemaDefinitionEdge).direction(Direction.OUT).edges().spliterator(), false))
+            .filter(s -> {
+                TypeDefinitionDescription value = s.valueOrNull(BaseKey.SchemaDefinitionDesc);
+                return value.getCategory() == TypeDefinitionCategory.CONNECTION_EDGE && value.getModifier().equals(oldName);
+            })
+            .forEach(edge -> {
+                TypeDefinitionDescription desc = new TypeDefinitionDescription(TypeDefinitionCategory.CONNECTION_EDGE, newName);
+                edge.property(BaseKey.SchemaDefinitionDesc.name(), desc);
+            });
     }
 
     public JanusGraphSchemaVertex getSchemaVertex(JanusGraphSchemaElement element) {
@@ -1275,6 +1285,21 @@ public class ManagementSystem implements JanusGraphManagement {
     @Override
     public VertexLabelMaker makeVertexLabel(String name) {
         return transaction.makeVertexLabel(name);
+    }
+
+    @Override
+    public VertexLabel addProperties(VertexLabel vertexLabel, PropertyKey... keys) {
+        return transaction.addProperties(vertexLabel, keys);
+    }
+
+    @Override
+    public EdgeLabel addProperties(EdgeLabel edgeLabel, PropertyKey... keys) {
+        return transaction.addProperties(edgeLabel, keys);
+    }
+
+    @Override
+    public EdgeLabel addConnection(EdgeLabel edgeLabel, VertexLabel outVLabel, VertexLabel inVLabel) {
+        return transaction.addConnection(edgeLabel, outVLabel, inVLabel);
     }
 
     @Override
