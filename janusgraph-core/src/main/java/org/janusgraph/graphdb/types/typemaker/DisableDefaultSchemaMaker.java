@@ -15,10 +15,7 @@
 package org.janusgraph.graphdb.types.typemaker;
 
 import org.janusgraph.core.*;
-import org.janusgraph.core.schema.DefaultSchemaMaker;
-import org.janusgraph.core.schema.EdgeLabelMaker;
-import org.janusgraph.core.schema.PropertyKeyMaker;
-import org.janusgraph.core.schema.VertexLabelMaker;
+import org.janusgraph.core.schema.*;
 
 /**
  * @author Matthias Broecheler (me@matthiasb.com)
@@ -54,5 +51,23 @@ public class DisableDefaultSchemaMaker implements DefaultSchemaMaker {
     @Override
     public boolean ignoreUndefinedQueryTypes() {
         return false;
+    }
+
+    @Override
+    public void makePropertyConstraintForEdge(EdgeLabel edgeLabel, PropertyKey key, SchemaManager manager) {
+        throw new IllegalArgumentException(
+            String.format("Property Key constraint does not exist for given Edge Label [%s] and property key [%s].", edgeLabel, key));
+    }
+
+    @Override
+    public void makePropertyConstraintForVertex(VertexLabel vertexLabel, PropertyKey key, SchemaManager manager) {
+        throw new IllegalArgumentException(
+            String.format("Property Key constraint does not exist for given Vertex Label [%s] and property key [%s].", vertexLabel, key));
+    }
+
+    @Override
+    public void makeConnectionConstraint(EdgeLabel edgeLabel, VertexLabel outVLabel, VertexLabel inVLabel, SchemaManager manager) {
+        throw new IllegalArgumentException(
+            String.format("Connection constraint does not exist for given Edge Label [%s], outgoing Vertex Label [%s] and incoming Vertex Label [%s]", edgeLabel, outVLabel, inVLabel));
     }
 }
