@@ -14,12 +14,16 @@
 
 package org.janusgraph.graphdb.berkeleyje;
 
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraphException;
 import org.janusgraph.core.JanusGraphFactory;
 import org.janusgraph.diskstorage.Backend;
 import org.janusgraph.diskstorage.BackendException;
 import org.janusgraph.diskstorage.configuration.ConfigOption;
 import org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration;
+import org.janusgraph.graphdb.internal.JanusGraphSchemaCategory;
+import org.janusgraph.graphdb.types.system.BaseKey;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +39,9 @@ import org.janusgraph.graphdb.JanusGraphTest;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BerkeleyGraphTest extends JanusGraphTest {
@@ -92,6 +99,22 @@ public class BerkeleyGraphTest extends JanusGraphTest {
     @Override
     public void testConcurrentConsistencyEnforcement() {
         //Do nothing TODO: Figure out why this is failing in BerkeleyDB!!
+    }
+
+
+    @Test
+    public void testSchemaGraph(){
+        mgmt.makeVertexLabel("test1").make();
+        mgmt.makePropertyKey("test2").dataType(String.class).make();
+        finishSchema();
+
+        SchemaTraversalSourceDsl g = graph.traversal(SchemaTraversalSourceDsl.class);
+
+        List<Vertex> vertices = g.vertexLabel("test1").toList();
+        assertEquals(1, vertices.size());
+
+        List<Object> objects = g.vertexLabel().values(BaseKey.SchemaName.name(), BaseKey.SchemaCategory.name()).toList();
+        assertEquals(10, objects.size());
     }
 
     @Test

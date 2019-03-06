@@ -48,7 +48,7 @@ public class VertexIterable implements Iterable<InternalVertex> {
                 while (v == null && iterator.hasNext()) {
                     final long nextId = iterator.next();
                     //Filter out invisible vertices
-                    if (IDManager.VertexIDType.Invisible.is(nextId)) continue;
+                    //if (IDManager.VertexIDType.Invisible.is(nextId)) continue;
 
                     v = tx.getInternalVertex(nextId);
                     //Filter out deleted vertices and types
