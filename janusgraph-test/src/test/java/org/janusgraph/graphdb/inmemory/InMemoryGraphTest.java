@@ -15,6 +15,8 @@
 package org.janusgraph.graphdb.inmemory;
 
 import com.google.common.base.Preconditions;
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.diskstorage.configuration.ModifiableConfiguration;
 import org.janusgraph.diskstorage.configuration.WriteConfiguration;
 import org.janusgraph.graphdb.JanusGraphTest;
@@ -23,6 +25,8 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Matthias Broecheler (me@matthiasb.com)
@@ -52,6 +56,71 @@ public class InMemoryGraphTest extends JanusGraphTest {
             open(config.getConfiguration());
         }
         newTx();
+    }
+
+    @Test
+    public void testAddVertex(){
+        mgmt.makeVertexLabel("test").make();
+        finishSchema();
+
+        graph.traversal().addV("test").next();
+    }
+
+    @Test
+    public void testFailsAddVertex(){
+        assertThrows(IllegalArgumentException.class, () ->
+            graph.traversal().addV("test").next());
+    }
+
+    @Test
+    public void testAddEdge(){
+        mgmt.makeVertexLabel("vertex1").make();
+        mgmt.makeEdgeLabel("edge1").make();
+        finishSchema();
+
+        graph.traversal().addV("vertex1").as("v1").addV("vertex1").addE("edge1").to("v1").next();
+    }
+
+    @Test
+    public void testFailsAddEdge(){
+        mgmt.makeVertexLabel("vertex1").make();
+        finishSchema();
+
+        assertThrows(IllegalArgumentException.class, () ->
+            graph.traversal().addV("vertex1").as("v1").addV("vertex1").addE("edge1").to("v1").next());
+    }
+
+    @Test
+    public void testAddPropertyInVertexStep() {
+        mgmt.makeVertexLabel("vertex1").make();
+        mgmt.makePropertyKey("property1").dataType(String.class).make();
+        finishSchema();
+
+        graph.traversal().addV("vertex1").property("property1", "test").next();
+
+        Vertex vertex1 = graph.traversal().V().hasLabel("vertex1").next();
+        assertNotNull(vertex1);
+        assertEquals("test", vertex1.property("property1").value());
+    }
+
+    @Test
+    public void testFailsAddPropertyInVertexStep(){
+        mgmt.makeVertexLabel("vertex1").make();
+        finishSchema();
+
+        assertThrows(IllegalArgumentException.class, () ->
+            graph.traversal().addV("vertex1").property("property1", "test").next());
+    }
+
+    @Test
+    public void testFailsAddProperty(){
+        mgmt.makeVertexLabel("vertex1").make();
+        mgmt.makePropertyKey("property1").dataType(String.class).make();
+        finishSchema();
+        graph.traversal().addV("vertex1").property("property1", "test").next();
+
+        assertThrows(IllegalArgumentException.class, () ->
+            graph.traversal().V().has("vertex1", "property1", "test").property("property2", "").next());
     }
 
     @Override @Test @Disabled

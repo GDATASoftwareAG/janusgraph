@@ -56,6 +56,7 @@ import org.janusgraph.graphdb.query.QueryUtil;
 import org.janusgraph.graphdb.relations.EdgeDirection;
 import org.janusgraph.graphdb.tinkerpop.JanusGraphBlueprintsGraph;
 import org.janusgraph.graphdb.tinkerpop.JanusGraphFeatures;
+import org.janusgraph.graphdb.tinkerpop.JanusGraphSchemaStrategy;
 import org.janusgraph.graphdb.tinkerpop.optimize.AdjacentVertexFilterOptimizerStrategy;
 import org.janusgraph.graphdb.tinkerpop.optimize.JanusGraphStepStrategy;
 import org.janusgraph.graphdb.tinkerpop.optimize.JanusGraphLocalQueryOptimizerStrategy;
@@ -97,7 +98,11 @@ public class StandardJanusGraph extends JanusGraphBlueprintsGraph {
 
     static {
         TraversalStrategies graphStrategies = TraversalStrategies.GlobalCache.getStrategies(Graph.class).clone()
-                .addStrategies(AdjacentVertexFilterOptimizerStrategy.instance(), JanusGraphLocalQueryOptimizerStrategy.instance(), JanusGraphStepStrategy.instance());
+                .addStrategies(
+                    AdjacentVertexFilterOptimizerStrategy.instance(),
+                    JanusGraphLocalQueryOptimizerStrategy.instance(),
+                    JanusGraphStepStrategy.instance(),
+                    JanusGraphSchemaStrategy.instance());
 
         //Register with cache
         TraversalStrategies.GlobalCache.registerStrategies(StandardJanusGraph.class, graphStrategies);

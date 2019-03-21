@@ -2062,34 +2062,25 @@ public abstract class JanusGraphTest extends JanusGraphBaseTest {
         JanusGraphTransaction tx2 = graph.newTransaction();
 
         //Verify that using vertices across transactions is prohibited
-        JanusGraphVertex v11 = tx1.addVertex();
-        JanusGraphVertex v12 = tx1.addVertex();
+        final JanusGraphVertex v11 = tx1.addVertex();
+        final JanusGraphVertex v12 = tx1.addVertex();
         v11.addEdge("knows", v12);
 
-        JanusGraphVertex v21 = tx2.addVertex();
-        try {
-            v21.addEdge("knows", v11);
-            fail();
-        } catch (IllegalStateException ignored) {
-        }
-        JanusGraphVertex v22 = tx2.addVertex();
-        v21.addEdge("knows", v22);
+        final JanusGraphVertex createdVertex21 = tx2.addVertex();
+        assertThrows(IllegalStateException.class, () ->
+            createdVertex21 .addEdge("knows", v11));
+        final JanusGraphVertex v22 = tx2.addVertex();
+        createdVertex21 .addEdge("knows", v22);
         tx2.commit();
-        try {
-            v22.addEdge("knows", v21);
-            fail();
-        } catch (IllegalStateException ignored) {
-        }
+        assertThrows(IllegalStateException.class, () ->
+            v22.addEdge("knows", createdVertex21 ));
         tx1.rollback();
-        try {
-            v11.property(VertexProperty.Cardinality.single, "test", 5);
-            fail();
-        } catch (IllegalStateException ignored) {
-        }
+        assertThrows(IllegalStateException.class, () ->
+            v11.property(VertexProperty.Cardinality.single, "test", 5));
 
         //Test unidirected edge with and without internal existence check
         newTx();
-        v21 = getV(tx, v21);
+        JanusGraphVertex v21 = getV(tx, createdVertex21);
         tx.makeEdgeLabel("link").unidirected().make();
         JanusGraphVertex v3 = tx.addVertex();
         v21.addEdge("link", v3);
