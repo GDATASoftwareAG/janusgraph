@@ -9,6 +9,7 @@ import org.apache.tinkerpop.gremlin.process.traversal.step.sideEffect.AddPropert
 import org.apache.tinkerpop.gremlin.process.traversal.step.util.Parameters;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.AbstractTraversalStrategy;
 import org.apache.tinkerpop.gremlin.process.traversal.strategy.verification.ComputerVerificationStrategy;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.janusgraph.core.Transaction;
@@ -43,7 +44,7 @@ public class JanusGraphSchemaStrategy extends AbstractTraversalStrategy<Traversa
     }
 
     private void checkAddProperty(Transaction janusGraph, Traversal.Admin<?, ?> traversal, AddPropertyStep step) {
-        String key = step.getParameters().get(T.label, () -> "string").get(0);
+        String key = step.getParameters().get(T.key, () -> "string").get(0);
         if (janusGraph.getPropertyKey(key) == null) {
             throw new IllegalArgumentException("Property Key with given name does not exist: " + key);
         }
