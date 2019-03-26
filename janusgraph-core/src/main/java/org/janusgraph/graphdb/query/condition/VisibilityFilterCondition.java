@@ -40,7 +40,7 @@ public class VisibilityFilterCondition<E extends JanusGraphElement> extends Lite
     @Override
     public boolean evaluate(E element) {
         switch(visibility) {
-            case NORMAL: return !((InternalElement)element).isInvisible();
+            case NORMAL: return true;
             case SYSTEM: return (element instanceof JanusGraphRelation &&
                                     ((JanusGraphRelation)element).getType() instanceof SystemRelationType)
                     || (element instanceof JanusGraphVertex && element instanceof JanusGraphSchemaElement);
