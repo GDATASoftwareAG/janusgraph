@@ -30,17 +30,31 @@ public class SchemaTraversalSourceDsl extends GraphTraversalSource {
             .has(BaseKey.SchemaName.name(), JanusGraphSchemaCategory.VERTEXLABEL.getSchemaName(label));
     }
 
-
     public GraphTraversal<Vertex, Vertex> propertyKey() {
         return this.clone().V()
             .hasLabel(BaseVertexLabel.DEFAULT_VERTEXLABEL.name())
             .has(BaseKey.SchemaCategory.name(), JanusGraphSchemaCategory.PROPERTYKEY);
     }
 
+
+    public GraphTraversal<Vertex, Vertex> propertyKey(String key) {
+        return this.clone().V()
+            .hasLabel(BaseVertexLabel.DEFAULT_VERTEXLABEL.name())
+            .has(BaseKey.SchemaCategory.name(), JanusGraphSchemaCategory.PROPERTYKEY)
+            .has(BaseKey.SchemaName.name(), JanusGraphSchemaCategory.PROPERTYKEY.getSchemaName(key));
+    }
+
     public GraphTraversal<Vertex, Vertex> edgeLabel() {
         return this.clone().V()
             .hasLabel(BaseVertexLabel.DEFAULT_VERTEXLABEL.name())
             .has(BaseKey.SchemaCategory.name(), JanusGraphSchemaCategory.EDGELABEL);
+    }
+
+    public GraphTraversal<Vertex, Vertex> edgeLabel(String label) {
+        return this.clone().V()
+            .hasLabel(BaseVertexLabel.DEFAULT_VERTEXLABEL.name())
+            .has(BaseKey.SchemaCategory.name(), JanusGraphSchemaCategory.EDGELABEL)
+            .has(BaseKey.SchemaName.name(), JanusGraphSchemaCategory.EDGELABEL.getSchemaName(label));
     }
 
 }

@@ -14,6 +14,7 @@
 
 package org.janusgraph.graphdb.berkeleyje;
 
+import org.apache.tinkerpop.gremlin.process.traversal.dsl.GremlinDsl;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversal;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.Edge;
@@ -123,18 +124,20 @@ public class BerkeleyGraphTest extends JanusGraphTest {
         assertEquals(1, vertices.size());
 
         //Access edge between vertexLabel1 and propertyKey1
-        List<Vertex> edges = g.vertexLabel().out(BaseLabel.SchemaDefinitionEdge.name()).toList();
+        List<Vertex> mappedProperties = g.vertexLabel()
+            .out(BaseLabel.SchemaDefinitionEdge.name()).toList();
+        assertEquals(1, vertices.size());
 
         //property name using gremlin traversal and
-        ArrayList arrayList = (ArrayList) g.propertyKey()
-            .valueMap(BaseKey.SchemaName.name())
-            .next()
-            .get(BaseKey.SchemaName.name());
-        assertEquals("test2", JanusGraphSchemaCategory.getName((String)arrayList.get(0)));
+        String edgeSchemaName = (String) g.propertyKey()
+            .values(BaseKey.SchemaName.name()).unfold()
+            .next();
+        assertEquals("test2", JanusGraphSchemaCategory.getName(edgeSchemaName));
 
-
-        List<Object> objects = g.vertexLabel().values(BaseKey.SchemaName.name(), BaseKey.SchemaCategory.name()).toList();
-        assertEquals(10, objects.size());
+        String vertexSchemaName = (String) g.propertyKey()
+            .values(BaseKey.SchemaName.name()).unfold()
+            .next();
+        assertEquals("test1", JanusGraphSchemaCategory.getName(vertexSchemaName));
     }
 
     @Test
