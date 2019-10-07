@@ -16,10 +16,12 @@ package org.janusgraph.graphdb.schema;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.EdgeLabel;
 import org.janusgraph.core.PropertyKey;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.VertexLabel;
+import org.janusgraph.core.schema.JanusGraphIndex;
 import org.janusgraph.core.schema.JanusGraphManagement;
 
 import java.util.Map;
@@ -29,36 +31,58 @@ import java.util.Map;
  */
 public class SchemaContainer implements SchemaProvider {
 
-    private final Map<String,VertexLabelDefinition> vertexLabels;
-    private final Map<String,RelationTypeDefinition> relationTypes;
+    private Map<String, VertexLabelDefinition> vertexLabels;
+    private Map<String, RelationTypeDefinition> relationTypes;
+    private Map<String, IndexDefinition> indices;
 
     public SchemaContainer(JanusGraph graph) {
+        loadSchema(graph);
+    }
+
+    private void loadSchema(JanusGraph graph) {
         vertexLabels = Maps.newHashMap();
         relationTypes = Maps.newHashMap();
+        indices = Maps.newHashMap();
         JanusGraphManagement management = graph.openManagement();
 
         try {
-            for (VertexLabel vl : management.getVertexLabels()) {
-                VertexLabelDefinition vld = new VertexLabelDefinition(vl);
-                vertexLabels.put(vld.getName(),vld);
-            }
-
-            for (EdgeLabel el : management.getRelationTypes(EdgeLabel.class)) {
-                EdgeLabelDefinition eld = new EdgeLabelDefinition(el);
-                relationTypes.put(eld.getName(),eld);
-            }
             for (PropertyKey pk : management.getRelationTypes(PropertyKey.class)) {
                 PropertyKeyDefinition pkd = new PropertyKeyDefinition(pk);
                 relationTypes.put(pkd.getName(), pkd);
             }
+
+            for (EdgeLabel el : management.getRelationTypes(EdgeLabel.class)) {
+                EdgeLabelDefinition eld = new EdgeLabelDefinition(el, relationTypes);
+                relationTypes.put(eld.getName(), eld);
+            }
+
+            for (JanusGraphIndex idx : management.getGraphIndexes(Vertex.class)) {
+                IndexDefinition id = new IndexDefinition(idx, relationTypes);
+                indices.put(id.getName(), id);
+            }
+
+            for (VertexLabel vl : management.getVertexLabels()) {
+                VertexLabelDefinition vld = new VertexLabelDefinition(vl, relationTypes);
+                vertexLabels.put(vld.getName(), vld);
+            }
         } finally {
             management.rollback();
         }
-
     }
 
+    @Override
     public Iterable<VertexLabelDefinition> getVertexLabels() {
         return vertexLabels.values();
+    }
+
+    @Override
+    public IndexDefinition getIndex(String name) {
+        return indices.get(name);
+    }
+
+    @Override
+    public Iterable<IndexDefinition> getIndices() {
+        return indices.values();
     }
 
     @Override
@@ -67,15 +91,17 @@ public class SchemaContainer implements SchemaProvider {
     }
 
     public boolean containsVertexLabel(String name) {
-        return getVertexLabel(name)!=null;
+        return getVertexLabel(name) != null;
     }
 
+    @Override
     public Iterable<PropertyKeyDefinition> getPropertyKeys() {
-        return Iterables.filter(relationTypes.values(),PropertyKeyDefinition.class);
+        return Iterables.filter(relationTypes.values(), PropertyKeyDefinition.class);
     }
 
+    @Override
     public Iterable<EdgeLabelDefinition> getEdgeLabels() {
-        return Iterables.filter(relationTypes.values(),EdgeLabelDefinition.class);
+        return Iterables.filter(relationTypes.values(), EdgeLabelDefinition.class);
     }
 
     @Override
@@ -83,24 +109,29 @@ public class SchemaContainer implements SchemaProvider {
         return relationTypes.get(name);
     }
 
+    @Override
+    public Iterable<RelationTypeDefinition> getRelationTypes() {
+        return relationTypes.values();
+    }
+
     public boolean containsRelationType(String name) {
-        return getRelationType(name)!=null;
+        return getRelationType(name) != null;
     }
 
     @Override
     public EdgeLabelDefinition getEdgeLabel(String name) {
         RelationTypeDefinition def = getRelationType(name);
-        if (def!=null && !(def instanceof EdgeLabelDefinition))
+        if (def != null && !(def instanceof EdgeLabelDefinition))
             throw new IllegalArgumentException("Not an edge label but property key: " + name);
-        return (EdgeLabelDefinition)def;
+        return (EdgeLabelDefinition) def;
     }
 
     @Override
     public PropertyKeyDefinition getPropertyKey(String name) {
         RelationTypeDefinition def = getRelationType(name);
-        if (def!=null && !(def instanceof PropertyKeyDefinition))
+        if (def != null && !(def instanceof PropertyKeyDefinition))
             throw new IllegalArgumentException("Not a property key but edge label: " + name);
-        return (PropertyKeyDefinition)def;
+        return (PropertyKeyDefinition) def;
     }
 
 }

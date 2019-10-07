@@ -14,24 +14,34 @@
 
 package org.janusgraph.graphdb.schema;
 
+import com.google.common.collect.Maps;
 import org.janusgraph.core.EdgeLabel;
 import org.janusgraph.core.Multiplicity;
 import org.apache.tinkerpop.gremlin.structure.Direction;
+import org.janusgraph.core.PropertyKey;
+
+import java.util.Map;
 
 /**
  * @author Matthias Broecheler (me@matthiasb.com)
  */
-public class EdgeLabelDefinition extends RelationTypeDefinition {
+public class EdgeLabelDefinition extends RelationTypeDefinition implements SchemaElementWithPropertiesDefinition {
 
     private final boolean unidirected;
+    private final Map<String, PropertyKeyDefinition> properties;
 
     public EdgeLabelDefinition(String name, long id, Multiplicity multiplicity, boolean unidirected) {
         super(name, id, multiplicity);
         this.unidirected = unidirected;
+        this.properties = Maps.newHashMap();
     }
 
-    public EdgeLabelDefinition(EdgeLabel label) {
-        this(label.name(),label.longId(),label.multiplicity(),label.isUnidirected());
+    public EdgeLabelDefinition(EdgeLabel el, Map<String, RelationTypeDefinition> relationTypes) {
+        this(el.name(), el.longId(), el.multiplicity(), el.isUnidirected());
+        for (PropertyKey pk : el.mappedProperties()) {
+            PropertyKeyDefinition pkd = (PropertyKeyDefinition)relationTypes.get(pk.name());
+            properties.put(pkd.getName(), pkd);
+        }
     }
 
     public boolean isDirected() {
@@ -44,10 +54,17 @@ public class EdgeLabelDefinition extends RelationTypeDefinition {
 
     @Override
     public boolean isUnidirected(Direction dir) {
-        if (unidirected) return dir==Direction.OUT;
-        else return dir==Direction.BOTH;
+        if (unidirected) return dir == Direction.OUT;
+        else return dir == Direction.BOTH;
     }
 
+    @Override
+    public PropertyKeyDefinition getPropertyKey(String name) {
+        return properties.get(name);
+    }
 
-
+    @Override
+    public Iterable<PropertyKeyDefinition> getPropertyKeys() {
+        return properties.values();
+    }
 }

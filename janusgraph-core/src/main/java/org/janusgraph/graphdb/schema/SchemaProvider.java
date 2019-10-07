@@ -20,11 +20,18 @@ package org.janusgraph.graphdb.schema;
 public interface SchemaProvider {
 
     EdgeLabelDefinition getEdgeLabel(String name);
+    Iterable<EdgeLabelDefinition> getEdgeLabels();
 
     PropertyKeyDefinition getPropertyKey(String name);
+    Iterable<PropertyKeyDefinition> getPropertyKeys();
 
     RelationTypeDefinition getRelationType(String name);
+    Iterable<RelationTypeDefinition> getRelationTypes();
 
     VertexLabelDefinition getVertexLabel(String name);
+    Iterable<VertexLabelDefinition> getVertexLabels();
+
+    IndexDefinition getIndex(String name);
+    Iterable<IndexDefinition> getIndices();
 
 }
