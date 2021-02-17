@@ -21,21 +21,15 @@ import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__;
 import org.apache.tinkerpop.gremlin.process.traversal.step.branch.*;
 import org.apache.tinkerpop.gremlin.process.traversal.step.filter.TraversalFilterStep;
 import org.apache.tinkerpop.gremlin.process.traversal.step.map.OrderGlobalStep;
-import org.janusgraph.diskstorage.configuration.ModifiableConfiguration;
-import org.janusgraph.graphdb.JanusGraphBaseTest;
-import org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration;
 import org.janusgraph.graphdb.query.profile.QueryProfiler;
 import org.janusgraph.graphdb.tinkerpop.optimize.step.JanusGraphPropertiesStep;
 import org.janusgraph.graphdb.tinkerpop.optimize.step.JanusGraphStep;
 import org.janusgraph.graphdb.tinkerpop.optimize.step.JanusGraphVertexStep;
 import org.junit.jupiter.api.Test;
 
-import java.util.Map;
-
 import static org.apache.tinkerpop.gremlin.process.traversal.Order.asc;
 import static org.apache.tinkerpop.gremlin.process.traversal.Order.desc;
 import static org.janusgraph.graphdb.JanusGraphBaseTest.option;
-import static org.janusgraph.graphdb.JanusGraphBaseTest.validateConfigOptions;
 import static org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration.BATCH_PROPERTY_PREFETCHING;
 import static org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration.USE_MULTIQUERY;
 import static org.janusgraph.testutil.JanusGraphAssert.assertCount;

@@ -36,7 +36,6 @@ import org.janusgraph.graphdb.query.index.IndexSelectionUtil;
 import org.janusgraph.graphdb.tinkerpop.optimize.JanusGraphTraversalUtil;
 import org.janusgraph.graphdb.transaction.StandardJanusGraphTx;
 import org.janusgraph.graphdb.types.CompositeIndexType;
-import org.janusgraph.graphdb.types.IndexType;
 
 import java.util.HashSet;
 import java.util.List;

@@ -397,7 +397,7 @@ public class SerializerTest extends SerializerTestCommon {
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < length; j++) {
                 Geoshape.Point point = geo.getPoint(j);
-                out.putFloat((float) (i==0 ? geo.getPoint(j).getLatitude() : geo.getPoint(j).getLongitude()));
+                out.putFloat((float) (i==0 ? point.getLatitude() : point.getLongitude()));
             }
         }
         
@@ -408,7 +408,7 @@ public class SerializerTest extends SerializerTestCommon {
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < length; j++) {
                 Geoshape.Point point = geo2.getPoint(j);
-                out.putFloat((float) (i==0 ? geo2.getPoint(j).getLatitude() : geo2.getPoint(j).getLongitude()));
+                out.putFloat((float) (i==0 ? point.getLatitude() : point.getLongitude()));
             }
         }
 

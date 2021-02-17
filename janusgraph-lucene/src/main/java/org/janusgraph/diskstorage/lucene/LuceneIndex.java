@@ -1012,7 +1012,6 @@ public class LuceneIndex implements IndexProvider {
     private class Transaction implements BaseTransactionConfigurable {
 
         private final BaseTransactionConfig config;
-        private final Set<String> updatedStores = Sets.newHashSet();
         private final Map<String, IndexSearcher> searchers = new HashMap<>(4);
 
         private Transaction(BaseTransactionConfig config) {

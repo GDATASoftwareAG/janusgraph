@@ -97,9 +97,6 @@ public class RestClientSetupTest {
     private RestElasticSearchClient restElasticSearchClientMock;
 
     @Mock
-    private SSLContext sslContextMock;
-
-    @Mock
     private RestClientBuilder restClientBuilderMock;
 
     @BeforeEach

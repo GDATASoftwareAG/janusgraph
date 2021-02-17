@@ -30,7 +30,6 @@ import org.janusgraph.graphdb.database.IndexSerializer;
 import org.janusgraph.graphdb.query.graph.JointIndexQuery;
 import org.janusgraph.graphdb.query.profile.QueryProfiler;
 
-import org.janusgraph.graphdb.transaction.subquerycache.GuavaSubqueryCache;
 import org.janusgraph.graphdb.transaction.subquerycache.SubqueryCache;
 
 /**

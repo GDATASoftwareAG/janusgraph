@@ -67,7 +67,7 @@ public class GraphDatabaseConfigurationInstanceIdTest {
         assertEquals(graph1.openManagement().getOpenInstances().size(), 1);
         assertEquals(graph1.openManagement().getOpenInstances().toArray()[0], "not-unique");
         JanusGraphException janusGraphException = assertThrows(JanusGraphException.class, () -> {
-            final StandardJanusGraph graph2 = new StandardJanusGraph(new GraphDatabaseConfigurationBuilder().build(new CommonsConfiguration(config)));
+            new StandardJanusGraph(new GraphDatabaseConfigurationBuilder().build(new CommonsConfiguration(config)));
             graph1.close();
         });
         assertEquals("A JanusGraph graph with the same instance id [not-unique] is already open. Might required forced shutdown.", janusGraphException.getMessage());

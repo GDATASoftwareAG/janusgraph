@@ -76,8 +76,8 @@ public class QueryTest {
         JanusGraphManagement mgmt = graph.openManagement();
         PropertyKey prop1Key = mgmt.makePropertyKey("prop1").dataType(String.class).make();
         PropertyKey prop2Key = mgmt.makePropertyKey("prop2").dataType(String.class).make();
-        PropertyKey prop3Key = mgmt.makePropertyKey("prop3").dataType(String.class).make();
-        PropertyKey prop4Key = mgmt.makePropertyKey("prop4").dataType(String.class).make();
+        mgmt.makePropertyKey("prop3").dataType(String.class).make();
+        mgmt.makePropertyKey("prop4").dataType(String.class).make();
 
         mgmt.buildIndex("prop1_idx", Vertex.class).addKey(prop1Key).buildCompositeIndex();
         mgmt.buildIndex("props_idx", Vertex.class).addKey(prop1Key).addKey(prop2Key).buildCompositeIndex();
@@ -189,7 +189,7 @@ public class QueryTest {
     public void testIndexQueryCache() throws Exception {
         JanusGraphManagement mgmt = graph.openManagement();
         final PropertyKey prop = mgmt.makePropertyKey("prop").dataType(String.class).cardinality(Cardinality.SINGLE).make();
-        final JanusGraphIndex index = mgmt.buildIndex("index", Vertex.class).addKey(prop).buildCompositeIndex();
+        mgmt.buildIndex("index", Vertex.class).addKey(prop).buildCompositeIndex();
         mgmt.commit();
 
         // cache is used when there is no result for given query
@@ -328,7 +328,7 @@ public class QueryTest {
     @Test
     public void testFuzzyMatchWithoutIndex() {
         JanusGraphManagement mgmt = graph.openManagement();
-        PropertyKey name = mgmt.makePropertyKey("name").dataType(String.class).make();
+        mgmt.makePropertyKey("name").dataType(String.class).make();
         mgmt.commit();
 
         tx.addVertex().property("name", "some value");

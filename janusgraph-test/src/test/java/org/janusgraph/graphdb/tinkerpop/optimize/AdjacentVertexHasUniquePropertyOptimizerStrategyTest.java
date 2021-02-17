@@ -31,8 +31,6 @@ import static org.janusgraph.testutil.JanusGraphAssert.assertSameResultWithOptim
  */
 public class AdjacentVertexHasUniquePropertyOptimizerStrategyTest extends OptimizerStrategyTest {
 
-    private static TraversalStrategy optimizer = AdjacentVertexHasUniquePropertyOptimizerStrategy.instance();
-
     @Test
     public void testWithAndWithoutStrategy() {
         makeSampleGraph();

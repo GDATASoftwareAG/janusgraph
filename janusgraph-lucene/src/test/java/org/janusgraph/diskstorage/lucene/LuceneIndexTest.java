@@ -42,14 +42,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LuceneIndexTest extends IndexProviderTest {
 
-    private static final Logger log =
-            LoggerFactory.getLogger(LuceneIndexTest.class);
-
-    private static char REPLACEMENT_CHAR = '\u2022';
+    private static final char REPLACEMENT_CHAR = '\u2022';
     private static final String MAPPING = "mapping";
 
     @Override
-    public IndexProvider openIndex() throws BackendException {
+    public IndexProvider openIndex() {
         return new LuceneIndex(getLocalLuceneTestConfig());
     }
 

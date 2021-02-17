@@ -806,7 +806,6 @@ public class SolrIndex implements IndexProvider {
                     throw new IllegalArgumentException("Unsupported or invalid search shape type: " + geo.getType());
                 }
             } else if (value instanceof Date || value instanceof Instant) {
-                final String s = value.toString();
                 final String queryValue = escapeValue(value instanceof Date ? toIsoDate((Date) value) : value.toString());
                 Preconditions.checkArgument(predicate instanceof Cmp, "Relation not supported on date types: "
                         + predicate);

@@ -22,7 +22,6 @@ import org.janusgraph.graphdb.query.BaseQuery;
 import org.janusgraph.graphdb.query.ElementQuery;
 import org.janusgraph.graphdb.query.condition.Condition;
 import org.janusgraph.graphdb.query.condition.FixedCondition;
-import org.janusgraph.graphdb.query.profile.ProfileObservable;
 import org.janusgraph.graphdb.query.profile.QueryProfiler;
 
 import com.google.common.base.Preconditions;

@@ -112,8 +112,6 @@ public abstract class LuceneExample {
         //Auesee
         BooleanQuery.Builder filter = new BooleanQuery.Builder();
 
-        SpatialArgs args = new SpatialArgs(SpatialOperation.Intersects,Geoshape.circle(51.666167,6.58905,450).getShape());
-
         filter.add(LongPoint.newRangeQuery("time", 1000342034, 1000342034), BooleanClause.Occur.MUST);
 
 

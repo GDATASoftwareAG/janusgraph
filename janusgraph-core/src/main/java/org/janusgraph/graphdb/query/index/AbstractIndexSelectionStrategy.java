@@ -23,7 +23,6 @@ import org.janusgraph.core.schema.SchemaStatus;
 import org.janusgraph.diskstorage.configuration.Configuration;
 import org.janusgraph.graphdb.database.IndexSerializer;
 import org.janusgraph.graphdb.internal.OrderList;
-import org.janusgraph.graphdb.query.JanusGraphPredicate;
 import org.janusgraph.graphdb.query.QueryUtil;
 import org.janusgraph.graphdb.query.condition.*;
 import org.janusgraph.graphdb.query.graph.JointIndexQuery;

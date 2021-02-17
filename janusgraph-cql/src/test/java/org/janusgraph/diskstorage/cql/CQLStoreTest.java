@@ -52,8 +52,6 @@ import static org.mockito.Mockito.*;
 @Testcontainers
 public class CQLStoreTest extends KeyColumnValueStoreTest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CQLStoreTest.class);
-
     private static final String TEST_CF_NAME = "testcf";
     private static final String DEFAULT_COMPRESSOR_PACKAGE = "org.apache.cassandra.io.compress";
     private static final String TEST_KEYSPACE_NAME = CQLStoreTest.class.getSimpleName();
@@ -62,7 +60,7 @@ public class CQLStoreTest extends KeyColumnValueStoreTest {
     private CqlSession session;
 
     @InjectMocks
-    private CQLStoreManager mockManager = new CQLStoreManager(getBaseStorageConfiguration());
+    private final CQLStoreManager mockManager = new CQLStoreManager(getBaseStorageConfiguration());
 
     @Container
     public static final JanusGraphCassandraContainer cqlContainer = new JanusGraphCassandraContainer();

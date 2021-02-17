@@ -15,19 +15,14 @@
 package org.janusgraph;
 
 import com.google.common.base.Preconditions;
-import org.janusgraph.diskstorage.StandardStoreManager;
 import org.janusgraph.diskstorage.configuration.ModifiableConfiguration;
-import org.janusgraph.diskstorage.cql.CachingCQLStoreManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.CassandraContainer;
 
 import java.io.File;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.time.Duration;
-import java.util.Collections;
 
 import static org.janusgraph.diskstorage.cql.CQLConfigOptions.*;
 import static org.janusgraph.graphdb.configuration.GraphDatabaseConfiguration.*;

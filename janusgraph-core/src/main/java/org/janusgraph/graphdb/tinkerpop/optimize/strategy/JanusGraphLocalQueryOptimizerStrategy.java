@@ -204,18 +204,6 @@ public class JanusGraphLocalQueryOptimizerStrategy extends AbstractTraversalStra
         }
     }
 
-    private static boolean isChildOf(Step<?, ?> currentStep, List<Class<? extends Step>> stepClasses) {
-        Step<?, ?> parent = currentStep.getTraversal().getParent().asStep();
-        while (!parent.equals(EmptyStep.instance())) {
-            final Step<?, ?> p = parent;
-            if(stepClasses.stream().filter(stepClass -> stepClass.isInstance(p)).findFirst().isPresent()) {
-                return true;
-            }
-            parent = parent.getTraversal().getParent().asStep();
-        }
-        return false;
-    }
-
     private static final Set<Class<? extends ProviderOptimizationStrategy>> PRIORS = Collections.singleton(AdjacentVertexFilterOptimizerStrategy.class);
 
 

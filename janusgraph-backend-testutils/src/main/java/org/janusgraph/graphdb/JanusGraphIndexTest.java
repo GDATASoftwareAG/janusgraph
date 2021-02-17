@@ -2578,7 +2578,7 @@ public abstract class JanusGraphIndexTest extends JanusGraphBaseTest {
     @Test
     public void testOrderByWithRange() {
         final PropertyKey age = makeKey("age", Integer.class);
-        final JanusGraphIndex mixed = mgmt.buildIndex("mixed", Vertex.class).addKey(age).buildMixedIndex(INDEX);
+        mgmt.buildIndex("mixed", Vertex.class).addKey(age).buildMixedIndex(INDEX);
         finishSchema();
 
         for (int i = 0; i < 100; i++) {

@@ -45,7 +45,6 @@ import java.util.function.Predicate;
  */
 public class GraphCentricQueryBuilder implements JanusGraphQuery<GraphCentricQueryBuilder> {
 
-    private static final Logger log = LoggerFactory.getLogger(GraphCentricQueryBuilder.class);
     /**
      * Transaction in which this query is executed.
      */

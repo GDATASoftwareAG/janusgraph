@@ -19,7 +19,6 @@ import org.apache.tinkerpop.gremlin.structure.io.AbstractIoRegistry;
 import org.apache.tinkerpop.gremlin.structure.io.binary.GraphBinaryIo;
 import org.apache.tinkerpop.gremlin.structure.io.graphson.GraphSONIo;
 import org.apache.tinkerpop.gremlin.structure.io.gryo.GryoIo;
-import org.apache.tinkerpop.gremlin.structure.io.gryo.GryoSerializersV1d0;
 import org.apache.tinkerpop.gremlin.structure.io.gryo.GryoSerializersV3d0;
 import org.janusgraph.core.attribute.Geoshape;
 import org.janusgraph.graphdb.tinkerpop.io.JanusGraphP;
