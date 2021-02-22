@@ -17,15 +17,15 @@ port: 45940
 scriptEvaluationTimeout: 30000
 channelizer: org.janusgraph.channelizers.JanusGraphWebSocketChannelizer
 graphManager: org.janusgraph.graphdb.management.JanusGraphManager
-graphs: {
+graphs:
   ConfigurationManagementGraph: "src/test/resources/conf/janusgraph-server-integration.properties"
-}
-scriptEngines: {
-  gremlin-groovy: {
-    plugins: { org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin: {},
-               org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin: {},
-               org.apache.tinkerpop.gremlin.jsr223.ImportGremlinPlugin: {classImports: [java.lang.Math], methodImports: [java.lang.Math#*]},
-               org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin: {files: []}}}}
+scriptEngines:
+  gremlin-groovy:
+    plugins: 
+      org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin: {}
+      org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin: {}
+      org.apache.tinkerpop.gremlin.jsr223.ImportGremlinPlugin: {classImports: [java.lang.Math], methodImports: [java.lang.Math#*]}
+      org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin: {files: []}
 serializers:
   - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV1d0, config: { ioRegistries: [org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV1d0], custom: [groovy.json.JsonBuilder;org.apache.tinkerpop.gremlin.driver.ser.JsonBuilderGryoSerializer]}}
   - { className: org.apache.tinkerpop.gremlin.driver.ser.GryoMessageSerializerV3d0, config: { ioRegistries: [org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0], custom: [groovy.json.JsonBuilder;org.apache.tinkerpop.gremlin.driver.ser.JsonBuilderGryoSerializer]}}
@@ -37,8 +37,8 @@ serializers:
   - { className: org.apache.tinkerpop.gremlin.driver.ser.GraphSONMessageSerializerV3d0, config: { ioRegistries: [org.apache.tinkerpop.gremlin.tinkergraph.structure.TinkerIoRegistryV3d0] }}
 processors:
   - { className: org.apache.tinkerpop.gremlin.server.op.session.SessionOpProcessor, config: { sessionTimeout: 28800000 }}
-metrics: {
-  slf4jReporter: {enabled: true, interval: 180000}}
+metrics:
+  slf4jReporter: {enabled: true, interval: 180000}
 strictTransactionManagement: false
 maxInitialLineLength: 4096
 maxHeaderSize: 8192

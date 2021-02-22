@@ -12,17 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# https://editorconfig.org
-
 root = true
 
 [*]
 charset = utf-8
 indent_style = space
-indent_size = 4
+end_of_line = lf
+#trim_trailing_whitespace = true
 
-[*.{yaml,yml}]
+[*.{crt,keystore,truststore,kryo}]
+end_of_line = unset
+
+[*.java]
+#indent_size = 4
+insert_final_newline = true
+
+[*.{yaml,yml,properties}]
 indent_size = 2
+insert_final_newline = true
 
 [*.xml]
-insert_final_newline = false
+#indent_size = 4
+insert_final_newline = true
+
+[*.md]
+#indent_size = 4
+insert_final_newline = true
+
+[*.sh]
+#indent_size = 4
+insert_final_newline = true

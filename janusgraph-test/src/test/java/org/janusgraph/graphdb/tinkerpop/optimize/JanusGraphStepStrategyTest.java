@@ -79,7 +79,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class JanusGraphStepStrategyTest {
-    
+
     @ParameterizedTest
     @MethodSource("generateTestParameters")
     public void doTest(Traversal original, Traversal optimized, Collection<TraversalStrategy> otherStrategies) {

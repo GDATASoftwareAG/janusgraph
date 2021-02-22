@@ -16,16 +16,16 @@ host: 0.0.0.0
 port: 8182
 scriptEvaluationTimeout: 30000
 channelizer: org.apache.tinkerpop.gremlin.server.channel.WebSocketChannelizer
-graphs: {
+graphs:
   graph: conf/janusgraph-inmemory.properties
-}
-scriptEngines: {
-  gremlin-groovy: {
-    plugins: { org.janusgraph.graphdb.tinkerpop.plugin.JanusGraphGremlinPlugin: {},
-               org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin: {},
-               org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin: {},
-               org.apache.tinkerpop.gremlin.jsr223.ImportGremlinPlugin: {classImports: [java.lang.Math], methodImports: [java.lang.Math#*]},
-               org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin: {files: [scripts/empty-sample.groovy]}}}}
+scriptEngines:
+  gremlin-groovy:
+    plugins:
+      org.janusgraph.graphdb.tinkerpop.plugin.JanusGraphGremlinPlugin: {}
+      org.apache.tinkerpop.gremlin.server.jsr223.GremlinServerGremlinPlugin: {}
+      org.apache.tinkerpop.gremlin.tinkergraph.jsr223.TinkerGraphGremlinPlugin: {}
+      org.apache.tinkerpop.gremlin.jsr223.ImportGremlinPlugin: {classImports: [java.lang.Math], methodImports: [java.lang.Math#*]}
+      org.apache.tinkerpop.gremlin.jsr223.ScriptFileGremlinPlugin: {files: [scripts/empty-sample.groovy]}
 # JanusGraph sets default serializers. You need to uncomment the following lines, if you require any custom serializers.
 #
 # serializers:
@@ -44,12 +44,12 @@ scriptEngines: {
 processors:
   - { className: org.apache.tinkerpop.gremlin.server.op.session.SessionOpProcessor, config: { sessionTimeout: 28800000 }}
   - { className: org.apache.tinkerpop.gremlin.server.op.traversal.TraversalOpProcessor, config: { cacheExpirationTime: 600000, cacheMaxSize: 1000 }}
-metrics: {
-  consoleReporter: {enabled: true, interval: 180000},
-  csvReporter: {enabled: true, interval: 180000, fileName: /tmp/gremlin-server-metrics.csv},
-  jmxReporter: {enabled: true},
-  slf4jReporter: {enabled: true, interval: 180000},
-  graphiteReporter: {enabled: false, interval: 180000}}
+metrics:
+  consoleReporter: {enabled: true, interval: 180000}
+  csvReporter: {enabled: true, interval: 180000, fileName: /tmp/gremlin-server-metrics.csv}
+  jmxReporter: {enabled: true}
+  slf4jReporter: {enabled: true, interval: 180000}
+  graphiteReporter: {enabled: false, interval: 180000}
 maxInitialLineLength: 4096
 maxHeaderSize: 8192
 maxChunkSize: 8192

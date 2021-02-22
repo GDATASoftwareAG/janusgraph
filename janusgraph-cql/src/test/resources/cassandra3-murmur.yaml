@@ -17,7 +17,7 @@
 cluster_name: 'Test Cluster'
 num_tokens: 4
 hinted_handoff_enabled: false
-max_hint_window_in_ms: 10800000 # 3 hours
+max_hint_window_in_ms: 10800000 # 3 hoursS
 hinted_handoff_throttle_in_kb: 1024
 max_hints_delivery_threads: 2
 hints_flush_period_in_ms: 10000

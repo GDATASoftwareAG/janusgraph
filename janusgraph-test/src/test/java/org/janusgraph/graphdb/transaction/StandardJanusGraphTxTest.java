@@ -98,9 +98,9 @@ public class StandardJanusGraphTxTest extends EasyMockSupport {
         replayAll();
 
         StandardJanusGraphTx partialMock = createMockBuilder(StandardJanusGraphTx.class)
-           .withConstructor(mockGraph, txConfig)
-           .addMockedMethod("getRelationType")
-           .createMock();
+            .withConstructor(mockGraph, txConfig)
+            .addMockedMethod("getRelationType")
+            .createMock();
 
         expect(partialMock.getRelationType("Foo")).andReturn(null);
         expect(partialMock.getRelationType("Qux")).andReturn(propertyKey);

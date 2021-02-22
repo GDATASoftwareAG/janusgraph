@@ -79,4 +79,3 @@ However there are a few in-memory alternatives, such as (not exhaustive list, an
 the data remains the same - continuous write operations can drive uncontrolled log growth, leading to OOM). 
 The backend has dump/load capability, and supports compression.  
 - [Aerospike-based backend](https://github.com/Playtika/aerospike-janusgraph-storage-backend) (not part of Janugraph but a separate project)  
- 
