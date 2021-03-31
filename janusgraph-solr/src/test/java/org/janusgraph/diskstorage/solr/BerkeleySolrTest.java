@@ -14,6 +14,7 @@
 
 package org.janusgraph.diskstorage.solr;
 
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.janusgraph.diskstorage.configuration.ModifiableConfiguration;
 import org.janusgraph.diskstorage.configuration.WriteConfiguration;
 import org.testcontainers.junit.jupiter.Container;
@@ -32,5 +33,11 @@ public class BerkeleySolrTest extends SolrJanusGraphIndexTest {
     @Override
     public boolean supportsWildcardQuery() {
         return false;
+    }
+
+    @Override
+    @RepeatedIfExceptionsTest(repeats = 4, minSuccess = 2)
+    public void testListIndexing() {
+        super.testListIndexing();
     }
 }

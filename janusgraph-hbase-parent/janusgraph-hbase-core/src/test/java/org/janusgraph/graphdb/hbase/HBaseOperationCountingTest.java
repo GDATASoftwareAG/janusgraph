@@ -14,6 +14,7 @@
 
 package org.janusgraph.graphdb.hbase;
 
+import io.github.artsok.RepeatedIfExceptionsTest;
 import org.janusgraph.HBaseStorageSetup;
 import org.janusgraph.diskstorage.configuration.WriteConfiguration;
 import org.janusgraph.graphdb.JanusGraphOperationCountingTest;
@@ -40,6 +41,12 @@ public class HBaseOperationCountingTest extends JanusGraphOperationCountingTest 
     @Override
     public void testCacheConcurrency() {
         //Don't run this test;
+    }
+
+    @Override
+    @RepeatedIfExceptionsTest(repeats = 4, minSuccess = 2)
+    public void testIdCounts() {
+        super.testIdCounts();
     }
 
 }
