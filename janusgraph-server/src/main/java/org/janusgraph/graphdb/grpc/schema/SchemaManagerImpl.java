@@ -17,6 +17,7 @@ package org.janusgraph.graphdb.grpc.schema;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
 import org.janusgraph.graphdb.grpc.JanusGraphContextHandler;
+import org.janusgraph.graphdb.grpc.types.EdgeLabel;
 import org.janusgraph.graphdb.grpc.types.VertexLabel;
 
 public class SchemaManagerImpl extends SchemaManagerServiceGrpc.SchemaManagerServiceImplBase {
@@ -55,5 +56,37 @@ public class SchemaManagerImpl extends SchemaManagerServiceGrpc.SchemaManagerSer
         }
         responseObserver.onNext(GetVertexLabelByNameResponse.newBuilder().setVertexLabel(vertexLabel).build());
         responseObserver.onCompleted();
+    }
+
+    @Override
+    public void getEdgeLabelByName(
+        GetEdgeLabelByNameRequest request,
+        StreamObserver<GetEdgeLabelByNameResponse> responseObserver
+    ) {
+        if (request == null) {
+            responseObserver.onError(Status.INTERNAL
+                .withDescription("request is required").asRuntimeException());
+            return;
+        }
+        if (!request.hasContext()) {
+            responseObserver.onError(Status.INVALID_ARGUMENT
+                .withDescription("context is required").asException());
+            return;
+        }
+        final String edgeLabelName = request.getName();
+        if (edgeLabelName.isEmpty()) {
+            responseObserver.onError(Status.INVALID_ARGUMENT
+                .withDescription("name is required").asException());
+            return;
+        }
+        SchemaManagerProvider provider = contextHandler.getSchemaManagerProviderByContext(request.getContext());
+        EdgeLabel edgeLabel = provider.getEdgeLabelByName(edgeLabelName);
+        if (edgeLabel == null) {
+            responseObserver.onError(Status.NOT_FOUND.asException());
+            return;
+        }
+        responseObserver.onNext(GetEdgeLabelByNameResponse.newBuilder().setEdgeLabel(edgeLabel).build());
+        responseObserver.onCompleted();
+
     }
 }

@@ -22,9 +22,12 @@ import org.apache.tinkerpop.gremlin.server.GraphManager;
 import org.apache.tinkerpop.gremlin.server.Settings;
 import org.apache.tinkerpop.gremlin.server.util.DefaultGraphManager;
 import org.janusgraph.core.JanusGraph;
+import org.janusgraph.core.schema.EdgeLabelMaker;
 import org.janusgraph.core.schema.JanusGraphManagement;
 import org.janusgraph.core.schema.VertexLabelMaker;
 import org.janusgraph.graphdb.grpc.schema.SchemaManagerImpl;
+import org.janusgraph.graphdb.grpc.schema.util.GrpcUtils;
+import org.janusgraph.graphdb.grpc.types.EdgeLabel;
 import org.janusgraph.graphdb.grpc.types.VertexLabel;
 import org.janusgraph.graphdb.server.TestingServerClosable;
 import org.javatuples.Pair;
@@ -61,6 +64,20 @@ public abstract class JanusGraphGrpcServerBaseTest {
             vertexLabelMaker.partition();
         }
         vertexLabelMaker.make();
+
+        management.commit();
+    }
+
+    public void createEdgeLabel(String graph, EdgeLabel edgeLabel) {
+        JanusGraphManagement management = ((JanusGraph) graphManager.getGraph(graph)).openManagement();
+        EdgeLabelMaker edgeLabelMaker = management.makeEdgeLabel(edgeLabel.getName());
+        if (edgeLabel.getDirection() == EdgeLabel.Direction.OUT) {
+            edgeLabelMaker.directed();
+        } else {
+            edgeLabelMaker.unidirected();
+        }
+        edgeLabelMaker.multiplicity(GrpcUtils.convertGrpcEdgeMultiplicity(edgeLabel.getMultiplicity()));
+        edgeLabelMaker.make();
 
         management.commit();
     }
