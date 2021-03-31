@@ -14,19 +14,35 @@
 
 package org.janusgraph.graphdb.grpc.schema.util;
 
+import com.google.protobuf.Duration;
 import com.google.protobuf.Int64Value;
+import com.google.protobuf.NullValue;
 import org.janusgraph.core.Multiplicity;
 import org.janusgraph.graphdb.grpc.types.EdgeLabel;
+import org.janusgraph.graphdb.grpc.types.NullableDuration;
 import org.janusgraph.graphdb.grpc.types.VertexLabel;
+import org.janusgraph.graphdb.types.VertexLabelVertex;
 
 public class GrpcUtils {
 
     public static VertexLabel createVertexLabelProto(org.janusgraph.core.VertexLabel vertexLabel) {
+        NullableDuration.Builder duration = NullableDuration.newBuilder();
+        if (!(vertexLabel instanceof VertexLabelVertex)) {
+            throw new IllegalStateException("VertexLabel should be always an instance of VertexLabelVertex");
+        }
+        int ttl = ((VertexLabelVertex) vertexLabel).getTTL();
+        if (ttl != 0) {
+            duration.setData(Duration.newBuilder().setSeconds(ttl));
+        } else {
+            duration.setNull(NullValue.NULL_VALUE);
+        }
+
         return VertexLabel.newBuilder()
-            .setId(Int64Value.newBuilder().setValue(vertexLabel.longId()).build())
+            .setId(Int64Value.of(vertexLabel.longId()))
             .setName(vertexLabel.name())
             .setPartitioned(vertexLabel.isPartitioned())
             .setReadOnly(vertexLabel.isStatic())
+            .setTimeToLive(duration)
             .build();
     }
 
@@ -67,7 +83,7 @@ public class GrpcUtils {
             .setId(Int64Value.of(edgeLabel.longId()))
             .setName(edgeLabel.name())
             .setMultiplicity(convertToGrpcMultiplicity(edgeLabel.multiplicity()))
-            .setDirection(edgeLabel.isDirected() ? EdgeLabel.Direction.OUT : EdgeLabel.Direction.BOTH)
+            .setDirection(edgeLabel.isDirected() ? EdgeLabel.Direction.BOTH : EdgeLabel.Direction.OUT)
             .build();
     }
 }

@@ -14,16 +14,19 @@
 
 package org.janusgraph.graphdb.grpc.schema;
 
+import com.google.protobuf.Duration;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import org.janusgraph.graphdb.grpc.JanusGraphGrpcServerBaseTest;
 import org.janusgraph.graphdb.grpc.JanusGraphManagerClient;
 import org.janusgraph.graphdb.grpc.types.EdgeLabel;
 import org.janusgraph.graphdb.grpc.types.JanusGraphContext;
+import org.janusgraph.graphdb.grpc.types.NullableDuration;
 import org.janusgraph.graphdb.grpc.types.VertexLabel;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -66,13 +69,14 @@ public class SchemaManagerClientTest extends JanusGraphGrpcServerBaseTest {
         assertThrows(NullPointerException.class, () -> schemaManagerClient.getVertexLabelByName("test"));
     }
 
-    @Test
-    public void testGetVertexLabelByNameVertexLabelExists() {
-        final String vertexLabelName = "test";
+    @ParameterizedTest
+    @ValueSource(strings = { "test", "test2" })
+    public void testGetVertexLabelByNameVertexLabelExists(String vertexLabelName) {
         SchemaManagerClient schemaManagerClient = new SchemaManagerClient(getDefaultContext(), managedChannel);
 
         //create vertex
-        createVertexLabel(defaultGraphName, VertexLabel.newBuilder().setName(vertexLabelName).build());
+        createVertexLabel(defaultGraphName, VertexLabel.newBuilder()
+            .setName(vertexLabelName));
 
         VertexLabel vertexLabel = schemaManagerClient.getVertexLabelByName(vertexLabelName);
 
@@ -80,6 +84,8 @@ public class SchemaManagerClientTest extends JanusGraphGrpcServerBaseTest {
         assertFalse(vertexLabel.getPartitioned());
         assertFalse(vertexLabel.getReadOnly());
         assertNotEquals(0, vertexLabel.getId().getValue());
+        assertTrue(vertexLabel.getTimeToLive().hasNull());
+        assertFalse(vertexLabel.getTimeToLive().hasData());
     }
 
     @Test
@@ -88,14 +94,13 @@ public class SchemaManagerClientTest extends JanusGraphGrpcServerBaseTest {
         SchemaManagerClient schemaManagerClient = new SchemaManagerClient(getDefaultContext(), managedChannel);
 
         //create vertex
-        createVertexLabel(defaultGraphName, VertexLabel.newBuilder().setName(vertexLabelName).setReadOnly(true).build());
+        createVertexLabel(defaultGraphName, VertexLabel.newBuilder()
+            .setName(vertexLabelName)
+            .setReadOnly(true));
 
         VertexLabel vertexLabel = schemaManagerClient.getVertexLabelByName(vertexLabelName);
 
-        assertEquals(vertexLabelName, vertexLabel.getName());
-        assertFalse(vertexLabel.getPartitioned());
         assertTrue(vertexLabel.getReadOnly());
-        assertNotEquals(0, vertexLabel.getId().getValue());
     }
 
     @Test
@@ -104,14 +109,32 @@ public class SchemaManagerClientTest extends JanusGraphGrpcServerBaseTest {
         SchemaManagerClient schemaManagerClient = new SchemaManagerClient(getDefaultContext(), managedChannel);
 
         //create vertex
-        createVertexLabel(defaultGraphName, VertexLabel.newBuilder().setName(vertexLabelName).setPartitioned(true).build());
+        createVertexLabel(defaultGraphName, VertexLabel.newBuilder()
+            .setName(vertexLabelName)
+            .setPartitioned(true));
 
         VertexLabel vertexLabel = schemaManagerClient.getVertexLabelByName(vertexLabelName);
 
-        assertEquals(vertexLabelName, vertexLabel.getName());
         assertTrue(vertexLabel.getPartitioned());
-        assertFalse(vertexLabel.getReadOnly());
-        assertNotEquals(0, vertexLabel.getId().getValue());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {100, 2000, 12})
+    public void testGetVertexLabelByNameVertexLabelHasTtl(int ttlInSeconds) {
+        final String vertexLabelName = "testPartitioned";
+        SchemaManagerClient schemaManagerClient = new SchemaManagerClient(getDefaultContext(), managedChannel);
+
+        //create vertex
+        createVertexLabel(defaultGraphName, VertexLabel.newBuilder()
+            .setName(vertexLabelName)
+            .setPartitioned(true)
+            .setTimeToLive(NullableDuration.newBuilder().setData(Duration.newBuilder().setSeconds(ttlInSeconds))));
+
+        VertexLabel vertexLabel = schemaManagerClient.getVertexLabelByName(vertexLabelName);
+
+        assertFalse(vertexLabel.getTimeToLive().hasNull());
+        assertTrue(vertexLabel.getTimeToLive().hasData());
+        assertEquals(ttlInSeconds, vertexLabel.getTimeToLive().getData().getSeconds());
     }
 
     @Test
@@ -139,13 +162,14 @@ public class SchemaManagerClientTest extends JanusGraphGrpcServerBaseTest {
         assertThrows(NullPointerException.class, () -> schemaManagerClient.getEdgeLabelByName("test"));
     }
 
-    @Test
-    public void testGetEdgeLabelByNameEdgeLabelExists() {
-        final String edgeLabelName = "test";
+    @ParameterizedTest
+    @ValueSource(strings = { "test", "test2" })
+    public void testGetEdgeLabelByNameEdgeLabelExists(String edgeLabelName) {
         SchemaManagerClient schemaManagerClient = new SchemaManagerClient(getDefaultContext(), managedChannel);
 
         //create edge
-        createEdgeLabel(defaultGraphName, EdgeLabel.newBuilder().setName(edgeLabelName).build());
+        createEdgeLabel(defaultGraphName, EdgeLabel.newBuilder()
+            .setName(edgeLabelName));
 
         EdgeLabel edgeLabel = schemaManagerClient.getEdgeLabelByName(edgeLabelName);
 
@@ -158,28 +182,32 @@ public class SchemaManagerClientTest extends JanusGraphGrpcServerBaseTest {
     @ParameterizedTest
     @EnumSource(mode = EXCLUDE, names = { "UNRECOGNIZED" })
     public void testGetEdgeLabelByNameWithDefinedMultiplicity(EdgeLabel.Multiplicity multiplicity) {
-        final String edgeLabelName = "test";
+        final String edgeLabelName = "testMultiplicity";
         SchemaManagerClient schemaManagerClient = new SchemaManagerClient(getDefaultContext(), managedChannel);
 
         //create edge
-        createEdgeLabel(defaultGraphName, EdgeLabel.newBuilder().setName(edgeLabelName).setDirection(EdgeLabel.Direction.OUT).setMultiplicity(multiplicity).build());
+        createEdgeLabel(defaultGraphName, EdgeLabel.newBuilder()
+            .setName(edgeLabelName)
+            .setMultiplicity(multiplicity));
 
         EdgeLabel edgeLabel = schemaManagerClient.getEdgeLabelByName(edgeLabelName);
 
         assertEquals(edgeLabelName, edgeLabel.getName());
-        assertEquals(EdgeLabel.Direction.OUT, edgeLabel.getDirection());
+        assertEquals(EdgeLabel.Direction.BOTH, edgeLabel.getDirection());
         assertEquals(multiplicity, edgeLabel.getMultiplicity());
         assertNotEquals(0, edgeLabel.getId().getValue());
     }
 
     @ParameterizedTest
     @EnumSource(mode = EXCLUDE, names = { "UNRECOGNIZED" })
-    public void testGetEdgeLabelByNameWithDefinedMultiplicity(EdgeLabel.Direction direction) {
-        final String edgeLabelName = "test";
+    public void testGetEdgeLabelByNameWithDefinedDirection(EdgeLabel.Direction direction) {
+        final String edgeLabelName = "testDirection";
         SchemaManagerClient schemaManagerClient = new SchemaManagerClient(getDefaultContext(), managedChannel);
 
         //create edge
-        createEdgeLabel(defaultGraphName, EdgeLabel.newBuilder().setName(edgeLabelName).setDirection(direction).build());
+        createEdgeLabel(defaultGraphName, EdgeLabel.newBuilder()
+            .setName(edgeLabelName)
+            .setDirection(direction));
 
         EdgeLabel edgeLabel = schemaManagerClient.getEdgeLabelByName(edgeLabelName);
 
