@@ -39,7 +39,6 @@ env:
 jobs:
   tests:
     runs-on: ubuntu-20.04
-    needs: build-all
     strategy:
       fail-fast: false
       matrix:
