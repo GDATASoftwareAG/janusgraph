@@ -61,24 +61,24 @@ jobs:
       matrix:
         include:
           - module: hbase-parent/janusgraph-hbase-10
-            args: "-Dtest=\"**/diskstorage/hbase/*\""
+            install-args: "-Dhbase1.profile"
+            args: "-Dtest=\"**/diskstorage/hbase/*\" -Dhbase1.profile"
             name: hbase-10-diskstorage
           - module: hbase-parent/janusgraph-hbase-10
-            args: "-Dtest=\"**/graphdb/hbase/*\""
+            install-args: "-Dhbase1.profile"
+            args: "-Dtest=\"**/graphdb/hbase/*\" -Dhbase1.profile"
             name: hbase-10-graphdb
           - module: hbase-parent/janusgraph-hbase-10
-            args: "-Dtest=\"**/hadoop/*\""
+            install-args: "-Dhbase1.profile"
+            args: "-Dtest=\"**/hadoop/*\" -Dhbase1.profile"
             name: hbase-10-hadoop
           - module: hbase-parent/janusgraph-hbase-10
-            install-args: "-Dhbase.profile -Phbase2"
             args: "-Dtest=\"**/diskstorage/hbase/*\""
             name: hbase-2-diskstorage
           - module: hbase-parent/janusgraph-hbase-10
-            install-args: "-Dhbase.profile -Phbase2"
             args: "-Dtest=\"**/graphdb/hbase/*\""
             name: hbase-2-graphdb
           - module: hbase-parent/janusgraph-hbase-10
-            install-args: "-Dhbase.profile -Phbase2"
             args: "-Dtest=\"**/hadoop/*\""
             name: hbase-2-hadoop
     steps:
